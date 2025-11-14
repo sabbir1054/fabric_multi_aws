@@ -1,0 +1,12 @@
+node_modules
+
+# Dependency directories (at all levels)
+**/node_modules/
+node_modules/
+package-lock.json
+yarn.lock
+# Binary files and directories (at all levels)
+**/bin/
+bin/
+*.bin
+

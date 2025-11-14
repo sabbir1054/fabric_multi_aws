@@ -1,0 +1,38 @@
+---
+test:
+  name: Water Sensor Benchmark
+  description: Performance benchmarking for Water Sensor Ranking Chaincode
+  workers:
+    number: 2
+  rounds:
+    - label: addBatchSensorReadings-round1
+      description: First round of sensor readings with 50 TPS
+      txNumber: 100
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 50
+      workload:
+        module: benchmarks/workload/addSensorReadings.js
+        arguments:
+          batchSize: 5
+
+    - label: addBatchSensorReadings-round2
+      description: Second round of sensor readings with 50 TPS
+      txNumber: 100
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 50
+      workload:
+        module: benchmarks/workload/addSensorReadings.js
+        arguments:
+          batchSize: 5
+
+monitors:
+  resource:
+    - module: docker
+      options:
+        interval: 1
+        containers:
+          - all
