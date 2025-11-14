@@ -61,7 +61,7 @@ services:
     stdin_open: true
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     environment:
-      - FABRIC_CFG_PATH=/opt/hyperledger/fabric/configtx
+      - FABRIC_CFG_PATH=/etc/hyperledger/fabric
     volumes:
       - ./organizations:/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations
       - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
