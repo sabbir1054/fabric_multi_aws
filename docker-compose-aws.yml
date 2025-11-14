@@ -19,6 +19,7 @@ services:
     volumes:
       - ./system-genesis-block/genesis.block:/var/hyperledger/orderer/genesis.block
       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
+      - ./organizations:/opt/hyperledger/fabric/organizations
       - ordererdata:/var/hyperledger/production/orderer
     ports:
       - 7050:7050
@@ -44,12 +45,13 @@ services:
       - ./organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/var/hyperledger/peer/msp
       - ./organizations/peerOrganizations/org1.example.com/users:/var/hyperledger/peer/users
       - ./chaincode:/opt/gopath/src/github.com/chaincode
+      - ./organizations:/opt/hyperledger/fabric/organizations
     ports:
       - 7051:7051
       - 7053:7053
     extra_hosts:
       - "peer0.org2.example.com:72.61.113.7"
-      - "orderer.example.com:178.16.139.239"
+      - "orderer.example.com:178.16.139.239"   # ← FIXED AWS IP
     networks:
       - fabric-net
 
@@ -60,17 +62,29 @@ services:
     tty: true
     stdin_open: true
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+
     environment:
-      - FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      - FABRIC_CFG_PATH=/etc/hyperledger/fabric  # ← peer + core.yaml path
+
     volumes:
+      # Peer-related volumes
       - ./organizations:/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations
       - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
       - ./chaincode:/opt/gopath/src/github.com/chaincode
+
+      # IMPORTANT: For configtxgen (profile loading)
       - ./configtx:/opt/hyperledger/fabric/configtx
-      - ./organizations:/opt/hyperledger/fabric/organizations  
+
+      # IMPORTANT: For peer (core.yaml) + configtx.yaml
+      - ./configtx/configtx.yaml:/etc/hyperledger/fabric/configtx.yaml
+
+      # TLS paths fix
+      - ./organizations:/opt/hyperledger/fabric/organizations
+
     extra_hosts:
       - "peer0.org2.example.com:72.61.113.7"
-      - "orderer.example.com:178.16.139.239"
+      - "orderer.example.com:178.16.139.239"   # ← FIXED
+
     networks:
       - fabric-net
 
