@@ -1,10 +1,9 @@
-version: '2.4'
+version: "2.4"
 
 networks:
   fabric-net:
 
 services:
-
   orderer.example.com:
     container_name: orderer.example.com
     image: hyperledger/fabric-orderer:2.4
@@ -25,10 +24,9 @@ services:
     ports:
       - 7050:7050
     extra_hosts:
-      - "peer0.org2.example.com:72.61.113.7"
+      - "peer0.org2.example.com:178.16.139.239"
     networks:
       - fabric-net
-
 
   peer0.org1.example.com:
     container_name: peer0.org1.example.com
@@ -52,11 +50,10 @@ services:
       - 7051:7051
       - 7053:7053
     extra_hosts:
-      - "peer0.org2.example.com:72.61.113.7"
-      - "orderer.example.com:172.16.139.239"
+      - "peer0.org2.example.com:178.16.139.239"
+      - "orderer.example.com:3.106.134.191"
     networks:
       - fabric-net
-
 
   cli:
     container_name: cli
@@ -66,7 +63,7 @@ services:
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
 
     environment:
-      - FABRIC_CFG_PATH=/etc/hyperledger/fabric   # peer + core.yaml
+      - FABRIC_CFG_PATH=/etc/hyperledger/fabric # peer + core.yaml
 
     volumes:
       # peer CLI paths
@@ -85,8 +82,8 @@ services:
       - ./organizations:/etc/hyperledger/organizations
 
     extra_hosts:
-      - "peer0.org2.example.com:72.61.113.7"
-      - "orderer.example.com:172.16.139.239"
+      - "peer0.org2.example.com:178.16.139.239"
+      - "orderer.example.com:3.106.134.191"
 
     networks:
       - fabric-net
