@@ -51,7 +51,6 @@ services:
       - 7053:7053
     extra_hosts:
       - "peer0.org2.example.com:178.16.139.239"
-      - "orderer.example.com:3.27.144.169"
     networks:
       - fabric-net
 
@@ -83,7 +82,6 @@ services:
 
     extra_hosts:
       - "peer0.org2.example.com:178.16.139.239"
-      - "orderer.example.com:3.27.144.169"
 
     networks:
       - fabric-net
