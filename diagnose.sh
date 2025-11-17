@@ -178,16 +178,50 @@ fi
 # Check 10: Channel Join Status
 echo -e "\n${YELLOW}[10/10] Checking if peer has joined channel...${NC}"
 if docker ps | grep -q "$CLI_NAME"; then
-    CHANNELS=$(docker exec "$CLI_NAME" peer channel list 2>&1)
+    if [ "$LOCATION" == "AWS" ]; then
+        CHANNELS=$(docker exec "$CLI_NAME" bash -c "
+        export CORE_PEER_LOCALMSPID=Org1MSP
+        export CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+        export CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+        export CORE_PEER_TLS_ENABLED=true
+        export CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+        peer channel list 2>&1
+        ")
+    else
+        CHANNELS=$(docker exec "$CLI_NAME" bash -c "
+        export CORE_PEER_LOCALMSPID=Org2MSP
+        export CORE_PEER_ADDRESS=peer0.org2.example.com:7051
+        export CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+        export CORE_PEER_TLS_ENABLED=true
+        export CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+        peer channel list 2>&1
+        ")
+    fi
+
     if echo "$CHANNELS" | grep -q "mychannel"; then
         echo -e "${GREEN}✓ Peer has joined mychannel${NC}"
 
         # Get channel info
         echo -e "\n${GREEN}Channel Info:${NC}"
-        docker exec "$CLI_NAME" bash -c "
-        export CORE_PEER_TLS_ENABLED=true
-        peer channel getinfo -c mychannel 2>/dev/null
-        "
+        if [ "$LOCATION" == "AWS" ]; then
+            docker exec "$CLI_NAME" bash -c "
+            export CORE_PEER_LOCALMSPID=Org1MSP
+            export CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+            export CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+            export CORE_PEER_TLS_ENABLED=true
+            export CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+            peer channel getinfo -c mychannel 2>/dev/null
+            "
+        else
+            docker exec "$CLI_NAME" bash -c "
+            export CORE_PEER_LOCALMSPID=Org2MSP
+            export CORE_PEER_ADDRESS=peer0.org2.example.com:7051
+            export CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+            export CORE_PEER_TLS_ENABLED=true
+            export CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+            peer channel getinfo -c mychannel 2>/dev/null
+            "
+        fi
     else
         echo -e "${YELLOW}⚠ Peer has not joined mychannel yet${NC}"
         echo -e "${YELLOW}Available channels:${NC}"

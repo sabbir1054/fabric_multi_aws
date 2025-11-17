@@ -68,6 +68,10 @@ echo -e "${GREEN}✓ Containers are running${NC}"
 
 # Step 8: Generate Genesis Block (if not exists)
 echo -e "\n${YELLOW}[7/8] Checking genesis block...${NC}"
+
+# Remove any existing genesis block directory/file to avoid conflicts
+rm -rf ./system-genesis-block/genesis.block
+
 if [ ! -f "./system-genesis-block/genesis.block" ]; then
     echo -e "${YELLOW}Genesis block not found. Generating now...${NC}"
 
@@ -77,13 +81,17 @@ if [ ! -f "./system-genesis-block/genesis.block" ]; then
         -outputBlock ./genesis.block \
         -configPath /etc/hyperledger/fabric"
 
-    # Copy to host
-    docker cp cli:/opt/gopath/src/github.com/hyperledger/fabric/peer/genesis.block ./system-genesis-block/genesis.block
+    # Copy to host directory (not to a file path)
+    docker cp cli:/opt/gopath/src/github.com/hyperledger/fabric/peer/genesis.block ./system-genesis-block/
 
+    # Verify it was created
     if [ -f "./system-genesis-block/genesis.block" ]; then
         echo -e "${GREEN}✓ Genesis block generated successfully${NC}"
+        ls -lh ./system-genesis-block/genesis.block
     else
         echo -e "${RED}✗ Failed to generate genesis block${NC}"
+        echo -e "${YELLOW}Checking what's in system-genesis-block:${NC}"
+        ls -la ./system-genesis-block/
         exit 1
     fi
 else
