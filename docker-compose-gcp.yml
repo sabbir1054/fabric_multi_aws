@@ -18,10 +18,21 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:7051
       - CORE_PEER_LOCALMSPID=Org2MSP
       - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/peer/msp
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric-network_fabric-net
+      # TLS
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/var/hyperledger/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/var/hyperledger/peer/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/peer/tls/ca.crt
+      # Operations
+      - CORE_OPERATIONS_LISTENADDRESS=peer0.org2.example.com:9445
+      - CORE_METRICS_PROVIDER=prometheus
     working_dir: /opt/hyperledger/peer
+    command: peer node start
     volumes:
       - /var/run/:/host/var/run/
       - ./organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp:/var/hyperledger/peer/msp
+      - ./organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls:/var/hyperledger/peer/tls
       - ./organizations/peerOrganizations/org2.example.com/users:/var/hyperledger/peer/users
       - ./chaincode:/opt/gopath/src/github.com/chaincode
       - ./organizations:/opt/hyperledger/fabric/organizations
@@ -29,7 +40,7 @@ services:
       - peer0org2data:/var/hyperledger/production
     ports:
       - 7051:7051
-      - 7053:7053
+      - 9445:9445
     extra_hosts:
       - "orderer.example.com:3.27.144.169"
       - "peer0.org1.example.com:3.27.144.169"

@@ -70,14 +70,22 @@ echo -e "${GREEN}✓ Containers are running${NC}"
 echo -e "\n${YELLOW}[7/8] Checking genesis block...${NC}"
 if [ ! -f "./system-genesis-block/genesis.block" ]; then
     echo -e "${YELLOW}Genesis block not found. Generating now...${NC}"
-    docker exec cli configtxgen -profile TwoOrgsOrdererGenesis \
+
+    # Generate genesis block inside CLI container
+    docker exec cli bash -c "configtxgen -profile TwoOrgsOrdererGenesis \
         -channelID system-channel \
-        -outputBlock /opt/gopath/src/github.com/hyperledger/fabric/peer/system-genesis-block/genesis.block \
-        -configPath /etc/hyperledger/fabric
+        -outputBlock ./genesis.block \
+        -configPath /etc/hyperledger/fabric"
 
     # Copy to host
-    docker cp cli:/opt/gopath/src/github.com/hyperledger/fabric/peer/system-genesis-block/genesis.block ./system-genesis-block/
-    echo -e "${GREEN}✓ Genesis block generated${NC}"
+    docker cp cli:/opt/gopath/src/github.com/hyperledger/fabric/peer/genesis.block ./system-genesis-block/genesis.block
+
+    if [ -f "./system-genesis-block/genesis.block" ]; then
+        echo -e "${GREEN}✓ Genesis block generated successfully${NC}"
+    else
+        echo -e "${RED}✗ Failed to generate genesis block${NC}"
+        exit 1
+    fi
 else
     echo -e "${GREEN}✓ Genesis block already exists${NC}"
 fi
