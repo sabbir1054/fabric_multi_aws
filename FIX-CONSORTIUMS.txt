@@ -1,72 +1,65 @@
 ═══════════════════════════════════════════════════════════════════
-                    ✅ ORDERER ISSUE FIXED!
+            🔴 ORDERER PANIC - CONSORTIUMS MISSING
 ═══════════════════════════════════════════════════════════════════
 
-THE ROOT CAUSE WAS FOUND:
-  ✗ configtx.yaml was missing Consortiums section
-  ✗ This caused: "lacks ConsortiumsConfig" panic
+ERROR FROM problem.md:
+  "Failed validating bootstrap block: the block isn't a system 
+   channel block because it lacks ConsortiumsConfig"
 
-THE FIX IS READY:
-  ✅ configtx.yaml now has Consortiums (lines 170-174)
-  ✅ FRESH-START.sh will clean and setup fresh
-
-═══════════════════════════════════════════════════════════════════
-                    🚀 RUN THIS NOW - COPY THESE COMMANDS
-═══════════════════════════════════════════════════════════════════
-
-On AWS machine (13.239.132.194):
-
-cd ~/fabric_multi_aws
-chmod +x FRESH-START.sh
-./FRESH-START.sh
-
-When prompted, type: yes
+WHAT THIS MEANS:
+  Your genesis block is missing Consortiums configuration.
+  The orderer REQUIRES this for Fabric 2.x system channel.
 
 ═══════════════════════════════════════════════════════════════════
-                    📊 WHAT THE SCRIPT DOES
+                        ✅ THE FIX
 ═══════════════════════════════════════════════════════════════════
 
-[1/9] Stops all containers
-[2/9] Removes all containers
-[3/9] Removes Docker volumes (deletes old data)
-[4/9] Cleans generated files (genesis, channel artifacts)
-[5/9] Verifies cleanup is complete
-[6/9] Starts fresh containers
-[7/9] Generates NEW genesis block (WITH CONSORTIUMS FIX)
-[8/9] Starts orderer with fixed genesis
-[9/9] Generates channel artifacts
+I already FIXED the configtx.yaml file for you!
+
+Added this section to TwoOrgsOrdererGenesis:
+  Consortiums:
+    Consortium1:
+      Organizations:
+        - *Org1
+        - *Org2
+
+Now you just need to REGENERATE the genesis block.
 
 ═══════════════════════════════════════════════════════════════════
-                    ✅ SUCCESS LOOKS LIKE THIS
+                    🚀 RUN THIS COMMAND
 ═══════════════════════════════════════════════════════════════════
 
-╔══════════════════════════════════════════════════════════════════╗
-║              ✓✓✓ SUCCESS! ORDERER IS WORKING! ✓✓✓               ║
-╚══════════════════════════════════════════════════════════════════╝
-
-Next steps:
-1. Run: ./create-channel-aws.sh
-2. Run: ./diagnose.sh
-3. Run: ./copy-to-gcp.sh
+./regenerate-genesis.sh
 
 ═══════════════════════════════════════════════════════════════════
-                    ❌ IF IT FAILS
+                    📊 WHAT IT DOES
 ═══════════════════════════════════════════════════════════════════
 
-The script shows EXACTLY what's wrong at each step.
-
-If orderer panics:
-  • Full logs are shown
-  • Check: docker logs orderer.example.com
+[1/5] Stops orderer
+[2/5] Deletes old (broken) genesis block
+[3/5] Generates NEW genesis block with Consortiums
+[4/5] Starts orderer with new genesis block
+[5/5] Verifies orderer is working
 
 ═══════════════════════════════════════════════════════════════════
-                    📞 QUICK SUMMARY
+                        ✅ SUCCESS
 ═══════════════════════════════════════════════════════════════════
 
-STEP 1: chmod +x FRESH-START.sh
-STEP 2: ./FRESH-START.sh
-STEP 3: Type 'yes' when asked
-STEP 4: Wait for success message
-STEP 5: Run ./create-channel-aws.sh
+You'll see:
+  ✓✓✓ ORDERER IS WORKING! ✓✓✓
 
-This completely removes old setup and starts fresh with the FIX!
+Then run:
+  ./create-channel-aws.sh
+  ./diagnose.sh
+
+═══════════════════════════════════════════════════════════════════
+                        📝 FILES
+═══════════════════════════════════════════════════════════════════
+
+✅ FIXED: configtx/configtx.yaml (lines 170-174)
+✅ NEW:   regenerate-genesis.sh
+✅ INFO:  SOLUTION.md (detailed explanation)
+
+═══════════════════════════════════════════════════════════════════
+
+JUST RUN: ./regenerate-genesis.sh

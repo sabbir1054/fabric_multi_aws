@@ -1,23 +1,34 @@
-
-ubuntu@ip-172-31-183-39:~/fabric_multi_aws$ ./start-orderer.sh
+ubuntu@ip-172-31-183-39:~/fabric_multi_aws$ ./fix-orderer-now.sh
 ========================================
-  Starting Orderer
+  ORDERER FIX - DEEP DIAGNOSIS
 ========================================
 
-[1/4] Orderer container exists, checking status...
-Status: exited
-Orderer exited. Checking logs for errors...
+[1/8] Checking for orderer container...
+Orderer container found with status: exited
+Orderer is NOT running. Checking why it exited...
+
+=== ORDERER LOGS (Last 30 lines) ===
+        Metrics.Statsd.Address = "127.0.0.1:8125"
+        Metrics.Statsd.WriteInterval = 30s
+        Metrics.Statsd.Prefix = ""
+        ChannelParticipation.Enabled = true
+        ChannelParticipation.MaxRequestBodySize = 1048576
+        Admin.ListenAddress = "0.0.0.0:7053"
+        Admin.TLS.Enabled = true
+        Admin.TLS.PrivateKey = "/var/hyperledger/orderer/tls/server.key"
+        Admin.TLS.Certificate = "/var/hyperledger/orderer/tls/server.crt"
+        Admin.TLS.RootCAs = [/var/hyperledger/orderer/tls/ca.crt]
         Admin.TLS.ClientAuthRequired = true
         Admin.TLS.ClientRootCAs = [/var/hyperledger/orderer/tls/ca.crt]
         Admin.TLS.TLSHandshakeTimeShift = 0s
-2025-11-18 00:28:42.884 UTC 0003 INFO [orderer.common.server] initializeServerConfig -> Starting orderer with TLS enabled
-2025-11-18 00:28:42.920 UTC 0004 PANI [orderer.common.server] Main -> Failed validating bootstrap block: the block isn't a system channel block because it lacks ConsortiumsConfig
+2025-11-18 00:53:22.915 UTC 0003 INFO [orderer.common.server] initializeServerConfig -> Starting orderer with TLS enabled
+2025-11-18 00:53:22.939 UTC 0004 PANI [orderer.common.server] Main -> Failed validating bootstrap block: the block isn't a system channel block because it lacks ConsortiumsConfig
 panic: Failed validating bootstrap block: the block isn't a system channel block because it lacks ConsortiumsConfig
 
 goroutine 1 [running]:
-go.uber.org/zap/zapcore.(*CheckedEntry).Write(0xc000019080, {0x0, 0x0, 0x0})
+go.uber.org/zap/zapcore.(*CheckedEntry).Write(0xc0000e9080, {0x0, 0x0, 0x0})
         /go/src/github.com/hyperledger/fabric/vendor/go.uber.org/zap/zapcore/entry.go:234 +0x49b
-go.uber.org/zap.(*SugaredLogger).log(0xc000010370, 0x4, {0xf6f78e?, 0xf1?}, {0xc00002d730?, 0xc0001d2a20?, 0x1?}, {0x0, 0x0, 0x0})
+go.uber.org/zap.(*SugaredLogger).log(0xc0001288e0, 0x4, {0xf6f78e?, 0xf1?}, {0xc0000f7730?, 0xc000223368?, 0x1?}, {0x0, 0x0, 0x0})
         /go/src/github.com/hyperledger/fabric/vendor/go.uber.org/zap/sugar.go:234 +0x13b
 go.uber.org/zap.(*SugaredLogger).Panicf(...)
         /go/src/github.com/hyperledger/fabric/vendor/go.uber.org/zap/sugar.go:159
@@ -27,25 +38,51 @@ github.com/hyperledger/fabric/orderer/common/server.Main()
         /go/src/github.com/hyperledger/fabric/orderer/common/server/main.go:130 +0x7a8
 main.main()
         /go/src/github.com/hyperledger/fabric/cmd/orderer/main.go:15 +0x17
+=== END LOGS ===
 
-Removing stopped orderer...
+FOUND PANIC! Orderer is crashing.
+panic: Failed validating bootstrap block: the block isn't a system channel block because it lacks ConsortiumsConfig
+
+goroutine 1 [running]:
+go.uber.org/zap/zapcore.(*CheckedEntry).Write(0xc0000e9080, {0x0, 0x0, 0x0})
+        /go/src/github.com/hyperledger/fabric/vendor/go.uber.org/zap/zapcore/entry.go:234 +0x49b
+go.uber.org/zap.(*SugaredLogger).log(0xc0001288e0, 0x4, {0xf6f78e?, 0xf1?}, {0xc0000f7730?, 0xc000223368?, 0x1?}, {0x0, 0x0, 0x0})
+
+Removing failed orderer container...
 orderer.example.com
 
-[2/4] Checking genesis block...
-✓ Genesis block is a FILE
+[2/8] Checking genesis block...
+✓ Genesis block is a file
 -rw-r----- 1 ubuntu ubuntu 20K Nov 18 00:28 ./system-genesis-block/genesis.block
 
-[3/4] Starting orderer...
+[3/8] Skipping genesis generation (already exists)
+
+[4/8] Checking TLS certificates...
+✓ Orderer TLS directory exists
+✓ All TLS certificates found
+
+[5/8] Checking MSP...
+✓ Orderer MSP directory exists
+
+[6/8] Checking docker-compose-aws.yml...
+✓ docker-compose-aws.yml exists
+
+[7/8] Starting orderer...
 WARN[0000] /home/ubuntu/fabric_multi_aws/docker-compose-aws.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
 [+] Running 1/1
- ✔ Container orderer.example.com  Started                                                                                                               0.4s
+ ✔ Container orderer.example.com  Started                                                                                                                                                       0.4s
+Waiting 8 seconds for orderer to initialize...
 
-[4/4] Verifying orderer...
-✗ Orderer failed to start
+[8/8] Verifying orderer...
 
-Checking why it failed...
-2025-11-18 00:53:22.911 UTC 0001 INFO [localconfig] completeInitialization -> Kafka.Version unset, setting to 0.10.2.0
-2025-11-18 00:53:22.911 UTC 0002 INFO [orderer.common.server] prettyPrintStruct -> Orderer config values:
+========================================
+  ✗ ORDERER FAILED TO START
+========================================
+
+Checking if container exists but exited...
+Orderer exited immediately. Check logs:
+2025-11-18 04:32:42.430 UTC 0001 INFO [localconfig] completeInitialization -> Kafka.Version unset, setting to 0.10.2.0
+2025-11-18 04:32:42.430 UTC 0002 INFO [orderer.common.server] prettyPrintStruct -> Orderer config values:
         General.ListenAddress = "0.0.0.0"
         General.ListenPort = 7050
         General.TLS.Enabled = true
@@ -145,14 +182,14 @@ Checking why it failed...
         Admin.TLS.ClientAuthRequired = true
         Admin.TLS.ClientRootCAs = [/var/hyperledger/orderer/tls/ca.crt]
         Admin.TLS.TLSHandshakeTimeShift = 0s
-2025-11-18 00:53:22.915 UTC 0003 INFO [orderer.common.server] initializeServerConfig -> Starting orderer with TLS enabled
-2025-11-18 00:53:22.939 UTC 0004 PANI [orderer.common.server] Main -> Failed validating bootstrap block: the block isn't a system channel block because it lacks ConsortiumsConfig
+2025-11-18 04:32:42.433 UTC 0003 INFO [orderer.common.server] initializeServerConfig -> Starting orderer with TLS enabled
+2025-11-18 04:32:42.457 UTC 0004 PANI [orderer.common.server] Main -> Failed validating bootstrap block: the block isn't a system channel block because it lacks ConsortiumsConfig
 panic: Failed validating bootstrap block: the block isn't a system channel block because it lacks ConsortiumsConfig
 
 goroutine 1 [running]:
-go.uber.org/zap/zapcore.(*CheckedEntry).Write(0xc0000e9080, {0x0, 0x0, 0x0})
+go.uber.org/zap/zapcore.(*CheckedEntry).Write(0xc0004c9080, {0x0, 0x0, 0x0})
         /go/src/github.com/hyperledger/fabric/vendor/go.uber.org/zap/zapcore/entry.go:234 +0x49b
-go.uber.org/zap.(*SugaredLogger).log(0xc0001288e0, 0x4, {0xf6f78e?, 0xf1?}, {0xc0000f7730?, 0xc000223368?, 0x1?}, {0x0, 0x0, 0x0})
+go.uber.org/zap.(*SugaredLogger).log(0xc000130780, 0x4, {0xf6f78e?, 0xf1?}, {0xc0001d9730?, 0xc0000d45b8?, 0x1?}, {0x0, 0x0, 0x0})
         /go/src/github.com/hyperledger/fabric/vendor/go.uber.org/zap/sugar.go:234 +0x13b
 go.uber.org/zap.(*SugaredLogger).Panicf(...)
         /go/src/github.com/hyperledger/fabric/vendor/go.uber.org/zap/sugar.go:159
@@ -162,4 +199,5 @@ github.com/hyperledger/fabric/orderer/common/server.Main()
         /go/src/github.com/hyperledger/fabric/orderer/common/server/main.go:130 +0x7a8
 main.main()
         /go/src/github.com/hyperledger/fabric/cmd/orderer/main.go:15 +0x17
+ubuntu@ip-172-31-183-39:~/fabric_multi_aws$ ^C
 ubuntu@ip-172-31-183-39:~/fabric_multi_aws$

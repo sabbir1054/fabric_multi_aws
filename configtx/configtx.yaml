@@ -167,11 +167,11 @@ Profiles:
         - *OrdererOrg
       Capabilities:
         <<: *OrdererCapabilities
-    Application:
-      <<: *ApplicationDefaults
-      Organizations:
-        - *Org1
-        - *Org2
+    Consortiums:
+      Consortium1:
+        Organizations:
+          - *Org1
+          - *Org2
 
   TwoOrgsChannel:
     <<: *ChannelDefaults

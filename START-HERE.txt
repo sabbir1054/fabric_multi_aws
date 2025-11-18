@@ -1,8 +1,8 @@
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
-║                  🔴 ORDERER NOT WORKING                          ║
+║                  ✅ ORDERER ISSUE FIXED!                         ║
 ║                                                                  ║
-║              WHY? IT KEEPS CRASHING OR WON'T START              ║
+║             FRESH START WITH CORRECTED CODE                      ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 
@@ -10,26 +10,34 @@
                     🚀 RUN THIS COMMAND:
                     ═══════════════════
 
-                    ./fix-orderer-now.sh
+                    ./FRESH-START.sh
 
 
-             This will FIND and FIX the problem!
+        This will CLEAN EVERYTHING and START FRESH!
 
 
 ═══════════════════════════════════════════════════════════════════
 
-WHAT IT DOES:
-  [1] Checks if orderer crashed (shows logs)
-  [2] Checks if genesis.block is directory (fixes it)
-  [3] Checks TLS certificates (tells you if missing)
-  [4] Starts orderer
-  [5] Verifies it's working
+WHAT WAS FIXED:
+  ✅ configtx.yaml - Added missing Consortiums section
+     (This fixes: "lacks ConsortiumsConfig" panic)
+
+WHAT THE SCRIPT DOES:
+  [1] Stops all containers
+  [2] Removes all containers
+  [3] Removes Docker volumes
+  [4] Cleans generated files
+  [5] Verifies cleanup
+  [6] Starts fresh containers
+  [7] Generates genesis block (WITH FIX)
+  [8] Starts orderer
+  [9] Generates channel artifacts
 
 
 WHAT YOU'LL SEE:
 
   ✅ SUCCESS:
-     "✓✓✓ ORDERER IS WORKING! ✓✓✓"
+     "✓✓✓ SUCCESS! ORDERER IS WORKING! ✓✓✓"
      → Then run: ./create-channel-aws.sh
 
   ❌ FAILED:
@@ -41,9 +49,10 @@ WHAT YOU'LL SEE:
 
                     THAT'S IT!
 
-     1. Run: ./fix-orderer-now.sh
-     2. Read what it says
-     3. If works → run create-channel
-     4. If fails → share the error
+     1. Run: chmod +x FRESH-START.sh
+     2. Run: ./FRESH-START.sh
+     3. Type 'yes' when asked
+     4. Wait for success message
+     5. Run: ./create-channel-aws.sh
 
 ═══════════════════════════════════════════════════════════════════
