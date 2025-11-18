@@ -1,0 +1,66 @@
+================================================================================
+  IP ADDRESS CONFIGURATION
+================================================================================
+
+Machine 1 (Org1 + Orderer)
+--------------------------
+IP Address: 13.239.132.194
+File: docker-compose-org1.yaml
+Components:
+  - Orderer (port 7050, 7053)
+  - CA0 (port 7054)
+  - Peer0.Org1 (port 7051)
+  - Peer1.Org1 (port 8051)
+  - CouchDB0 (port 5984)
+  - CouchDB1 (port 6984)
+
+Machine 2 (Org2)
+----------------
+IP Address: 178.16.139.239
+File: docker-compose-org2.yaml
+Components:
+  - CA1 (port 7054)
+  - Peer0.Org2 (port 9051)
+  - Peer1.Org2 (port 10051)
+  - CouchDB2 (port 7984)
+  - CouchDB3 (port 8984)
+
+Configuration Status
+--------------------
+✓ docker-compose-org1.yaml updated with Machine 2 IP: 178.16.139.239
+✓ docker-compose-org2.yaml updated with Machine 1 IP: 13.239.132.194
+
+Network Communication
+---------------------
+Machine 1 containers will connect to Machine 2 services using:
+  - peer0.org2.example.com:178.16.139.239
+  - peer1.org2.example.com:178.16.139.239
+  - ca1.example.com:178.16.139.239
+
+Machine 2 containers will connect to Machine 1 services using:
+  - orderer.example.com:13.239.132.194
+  - peer0.org1.example.com:13.239.132.194
+  - peer1.org1.example.com:13.239.132.194
+  - ca0.example.com:13.239.132.194
+
+Required Firewall Ports
+-----------------------
+Machine 1 should allow inbound traffic on:
+  - 7050 (Orderer)
+  - 7053 (Orderer Admin)
+  - 7051 (Peer0.Org1)
+  - 8051 (Peer1.Org1)
+  - 7054 (CA0)
+
+Machine 2 should allow inbound traffic on:
+  - 9051 (Peer0.Org2)
+  - 10051 (Peer1.Org2)
+  - 7054 (CA1)
+
+Next Steps
+----------
+1. Ensure both machines can ping each other
+2. Ensure firewall rules allow required ports
+3. Proceed with network setup using the scripts
+
+================================================================================
