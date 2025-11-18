@@ -1,0 +1,117 @@
+================================================================================
+  PREREQUISITES - QUICK SUMMARY
+================================================================================
+
+REQUIRED SOFTWARE (Both Machines):
+----------------------------------
+✓ Docker (v20.10+)
+✓ Docker Compose (v1.29+ or v2.x)
+✓ Basic utilities: curl, tar, gzip, sed, ssh, scp
+
+REQUIRED SOFTWARE (Machine 1 Only):
+------------------------------------
+✓ Hyperledger Fabric Binaries v2.4.0:
+  - cryptogen
+  - configtxgen
+  - peer
+  - orderer
+
+SYSTEM REQUIREMENTS:
+--------------------
+✓ CPU: 2+ cores
+✓ RAM: 4GB+ (8GB recommended)
+✓ Disk: 50GB+ free space
+✓ OS: Ubuntu 18.04+, CentOS 7+, Debian 10+, Amazon Linux 2
+
+NETWORK REQUIREMENTS:
+---------------------
+✓ Machine 1 can reach Machine 2 (and vice versa)
+✓ Firewall allows required ports
+
+Machine 1 Ports (Inbound):
+  - 7050 (Orderer)
+  - 7051, 8051 (Peers)
+  - 7054 (CA)
+
+Machine 2 Ports (Inbound):
+  - 9051, 10051 (Peers)
+  - 7054 (CA)
+
+================================================================================
+  INSTALLATION OPTIONS
+================================================================================
+
+OPTION 1: Automated Installation (Recommended)
+-----------------------------------------------
+Machine 1:
+  ./install-prerequisites.sh --machine1
+
+Machine 2:
+  ./install-prerequisites.sh --machine2
+
+OPTION 2: Manual Installation
+------------------------------
+See PREREQUISITES.md for detailed instructions
+
+================================================================================
+  VERIFICATION
+================================================================================
+
+Check if everything is installed:
+  ./check-prerequisites.sh --machine1    # On Machine 1
+  ./check-prerequisites.sh --machine2    # On Machine 2
+
+Quick manual check:
+  docker --version
+  docker-compose --version
+  cryptogen version  # Machine 1 only
+
+Test Docker (should work without sudo):
+  docker ps
+
+================================================================================
+  COMMON ISSUES
+================================================================================
+
+Issue: "permission denied" when running docker
+Fix:
+  sudo usermod -aG docker $USER
+  # Then logout and login again
+
+Issue: Fabric binaries not found
+Fix:
+  export PATH=$PATH:$HOME/fabric-binaries/bin
+  # Or add to ~/.bashrc for permanent
+
+Issue: Cannot connect between machines
+Fix:
+  - Check firewall: sudo ufw status
+  - Test connectivity: ping <other_machine_ip>
+  - Test port: nc -zv <other_machine_ip> 7050
+
+================================================================================
+  INSTALLATION TIME
+================================================================================
+
+Automated installation takes approximately:
+  - Machine 1: 10-15 minutes (includes Fabric binaries)
+  - Machine 2: 5-10 minutes
+
+After installation, logout and login for group changes to take effect.
+
+================================================================================
+  READY TO PROCEED?
+================================================================================
+
+After installing prerequisites:
+
+1. Check installation:
+   ./check-prerequisites.sh --machine1  # or --machine2
+
+2. If all checks pass, proceed with deployment:
+   - Machine 1: ./setup-machine1.sh
+   - Machine 2: ./setup-machine2.sh
+
+================================================================================
+
+For detailed installation instructions, see: PREREQUISITES.md
