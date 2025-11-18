@@ -1,0 +1,117 @@
+================================================================================
+  SOLUTION FOR "cannot load client cert" ERROR
+================================================================================
+
+YOUR ERROR:
+-----------
+cannot load client cert for consenter orderer.example.com:7050:
+open .../organizations/.../tls/server.crt: no such file or directory
+
+ROOT CAUSE:
+-----------
+You're trying to create the genesis block BEFORE generating crypto materials.
+The TLS certificates must exist first!
+
+================================================================================
+  QUICK FIX (Run These Commands)
+================================================================================
+
+# 1. Clean up any partial files
+rm -rf organizations/ system-genesis-block/
+
+# 2. Generate crypto materials FIRST
+cryptogen generate --config=./crypto-config.yaml
+
+# 3. Verify crypto was created
+ls -la organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/
+
+# You should see: server.crt, server.key, ca.crt
+
+# 4. Now create genesis block
+export FABRIC_CFG_PATH=${PWD}/configtx
+mkdir -p system-genesis-block
+configtxgen -profile TwoOrgsOrdererGenesis \
+  -channelID system-channel \
+  -outputBlock ./system-genesis-block/genesis.block
+
+# 5. Verify
+ls -lh system-genesis-block/genesis.block
+
+================================================================================
+  BETTER SOLUTION: Use the Automated Script
+================================================================================
+
+Instead of running commands manually, just use:
+
+./setup-machine1-auto.sh
+
+This script:
+  ✓ Generates crypto materials first
+  ✓ Verifies they exist before creating genesis block
+  ✓ Shows helpful error messages if something fails
+  ✓ Handles everything in the correct order
+
+================================================================================
+  UPDATED SCRIPTS
+================================================================================
+
+Both setup scripts have been updated with better error checking:
+
+✓ setup-machine1-auto.sh - Now verifies crypto materials exist before genesis
+✓ setup-machine1.sh - Same verification added
+
+They will now:
+  - Check if TLS certs exist before running configtxgen
+  - Show clear error messages if crypto materials are missing
+  - Prevent this error from happening
+
+================================================================================
+  CORRECT ORDER OF OPERATIONS
+================================================================================
+
+1. ✅ Generate crypto materials (cryptogen)
+     Creates: organizations/ directory with all certificates
+
+2. ✅ Generate genesis block (configtxgen)
+     Needs: TLS certificates from step 1
+     Creates: system-genesis-block/genesis.block
+
+3. ✅ Generate channel tx (configtxgen)
+     Creates: channel-artifacts/*.tx files
+
+4. ✅ Start network (docker-compose)
+     Uses: genesis block from step 2
+
+================================================================================
+  IF YOU STILL GET THE ERROR
+================================================================================
+
+Check these:
+
+1. Are you in the correct directory?
+   pwd
+   # Should show: .../fabric-network
+
+2. Does crypto-config.yaml exist?
+   ls -la crypto-config.yaml
+
+3. Is cryptogen installed?
+   cryptogen version
+
+4. Did crypto generation work?
+   ls -la organizations/
+
+If any of these fail, run:
+   ./install-prerequisites.sh --machine1
+
+================================================================================
+  PREVENTION
+================================================================================
+
+Always use the automated scripts:
+  - ./setup-machine1-auto.sh (Machine 1)
+  - ./setup-machine2-auto.sh (Machine 2)
+
+They handle the correct order and error checking automatically!
+
+================================================================================

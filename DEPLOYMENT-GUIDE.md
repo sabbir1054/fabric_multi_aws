@@ -266,14 +266,42 @@ Or manually install:
 ./install-prerequisites.sh --machine1
 ```
 
-#### 2. "Docker permission denied"
+#### 2. "cannot load client cert" or "no such file or directory" for TLS certs
+**Error:**
+```
+cannot load client cert for consenter orderer.example.com:7050:
+open .../tls/server.crt: no such file or directory
+```
+
+**Cause:** Trying to create genesis block before crypto materials exist.
+
+**Solution:**
+```bash
+# Clean up
+rm -rf organizations/ system-genesis-block/
+
+# Generate crypto materials FIRST
+cryptogen generate --config=./crypto-config.yaml
+
+# Verify
+ls -la organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/
+
+# Then run the full setup
+./setup-machine1-auto.sh
+```
+
+**Note:** The updated scripts now check for this automatically and prevent the error!
+
+See [QUICK-FIX.md](QUICK-FIX.md) for detailed solution.
+
+#### 3. "Docker permission denied"
 **Solution:**
 ```bash
 sudo usermod -aG docker $USER
 # Logout and login again
 ```
 
-#### 3. Cannot connect between machines
+#### 4. Cannot connect between machines
 **Solution:**
 ```bash
 # Test connectivity
@@ -289,7 +317,7 @@ sudo ufw status  # Ubuntu/Debian
 sudo firewall-cmd --list-all  # CentOS/RHEL
 ```
 
-#### 4. Container fails to start
+#### 5. Container fails to start
 **Solution:**
 ```bash
 # Check logs
@@ -303,7 +331,7 @@ docker-compose -f docker-compose-org1.yaml down
 docker-compose -f docker-compose-org1.yaml up -d
 ```
 
-#### 5. Chaincode installation fails
+#### 6. Chaincode installation fails
 **Solution:**
 ```bash
 # Make sure chaincode directory exists

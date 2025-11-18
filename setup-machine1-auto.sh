@@ -125,23 +125,59 @@ if [ -d "organizations" ]; then
     echo "Removing existing organizations directory..."
     rm -rf organizations
 fi
+
+echo "Running: cryptogen generate --config=./crypto-config.yaml"
 cryptogen generate --config=./crypto-config.yaml
 if [ $? -ne 0 ]; then
-    print_error "Failed to generate crypto materials"
+    print_error "Failed to generate crypto materials.\nMake sure crypto-config.yaml exists and cryptogen is installed."
 fi
-echo "✓ Crypto materials generated"
+
+# Verify crypto materials were created
+if [ ! -d "organizations/ordererOrganizations" ] || [ ! -d "organizations/peerOrganizations" ]; then
+    print_error "Crypto materials not generated properly. Organizations directory is missing."
+fi
+
+# Verify orderer TLS certs exist (needed for genesis block)
+if [ ! -f "organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt" ]; then
+    print_error "Orderer TLS certificates not found. Crypto generation may have failed."
+fi
+
+echo "✓ Crypto materials generated successfully"
+echo "  - Orderer certificates: ✓"
+echo "  - Org1 certificates: ✓"
+echo "  - Org2 certificates: ✓"
 
 # Generate genesis block and channel artifacts
 print_step "Step 4/9: Generating genesis block and channel artifacts..."
 mkdir -p system-genesis-block channel-artifacts
+
+# Set FABRIC_CFG_PATH to configtx directory
 export FABRIC_CFG_PATH=${PWD}/configtx
+echo "FABRIC_CFG_PATH set to: $FABRIC_CFG_PATH"
+
+# Verify configtx.yaml exists
+if [ ! -f "${FABRIC_CFG_PATH}/configtx.yaml" ]; then
+    print_error "configtx.yaml not found at ${FABRIC_CFG_PATH}/configtx.yaml"
+fi
+
+# Verify crypto materials exist before generating genesis block
+if [ ! -f "organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt" ]; then
+    print_error "Orderer TLS certificates not found. Cannot create genesis block.\nPlease ensure crypto materials were generated in Step 3."
+fi
 
 # Generate genesis block
+echo "Generating genesis block..."
 configtxgen -profile TwoOrgsOrdererGenesis -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
 if [ $? -ne 0 ]; then
-    print_error "Failed to generate genesis block"
+    print_error "Failed to generate genesis block.\nCheck that:\n  1. Crypto materials exist in organizations/\n  2. configtx.yaml paths are correct\n  3. FABRIC_CFG_PATH is set to ${PWD}/configtx"
 fi
-echo "✓ Genesis block generated"
+
+# Verify genesis block was created
+if [ ! -f "system-genesis-block/genesis.block" ]; then
+    print_error "Genesis block was not created"
+fi
+
+echo "✓ Genesis block generated ($(du -h system-genesis-block/genesis.block | cut -f1))"
 
 # Generate channel configuration
 configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
