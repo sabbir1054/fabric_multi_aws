@@ -62,15 +62,17 @@ echo -e "${GREEN}  STEP 4: CLEAN GENERATED FILES${NC}"
 echo -e "${GREEN}========================================${NC}"
 
 echo -e "\n${YELLOW}[4/8] Cleaning genesis block...${NC}"
-rm -rf ./system-genesis-block/genesis.block
-rm -rf ./system-genesis-block/*
+# Remove the entire directory to avoid permission issues
+sudo rm -rf ./system-genesis-block
+# Recreate it with proper permissions
 mkdir -p ./system-genesis-block
+sudo chmod 777 ./system-genesis-block
 echo -e "${GREEN}✓ Genesis block removed${NC}"
 
 echo -e "\n${YELLOW}[5/8] Cleaning channel artifacts...${NC}"
-rm -f ./channel-artifacts/*.block
-rm -f ./channel-artifacts/*.tx
+sudo rm -rf ./channel-artifacts
 mkdir -p ./channel-artifacts
+sudo chmod 777 ./channel-artifacts
 echo -e "${GREEN}✓ Channel artifacts cleaned${NC}"
 
 echo -e "\n${GREEN}========================================${NC}"
@@ -122,9 +124,11 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Copy genesis block properly
+# Copy genesis block properly (avoid permission issues)
 docker cp cli:/opt/gopath/src/github.com/hyperledger/fabric/peer/genesis.block /tmp/genesis_fresh.block
+sudo rm -f ./system-genesis-block/genesis.block
 mv /tmp/genesis_fresh.block ./system-genesis-block/genesis.block
+chmod 644 ./system-genesis-block/genesis.block
 
 if [ -f "./system-genesis-block/genesis.block" ]; then
     echo -e "${GREEN}✓ Genesis block generated successfully!${NC}"
