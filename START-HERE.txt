@@ -1,0 +1,49 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║                  🔴 ORDERER NOT WORKING                          ║
+║                                                                  ║
+║              WHY? IT KEEPS CRASHING OR WON'T START              ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+
+                    🚀 RUN THIS COMMAND:
+                    ═══════════════════
+
+                    ./fix-orderer-now.sh
+
+
+             This will FIND and FIX the problem!
+
+
+═══════════════════════════════════════════════════════════════════
+
+WHAT IT DOES:
+  [1] Checks if orderer crashed (shows logs)
+  [2] Checks if genesis.block is directory (fixes it)
+  [3] Checks TLS certificates (tells you if missing)
+  [4] Starts orderer
+  [5] Verifies it's working
+
+
+WHAT YOU'LL SEE:
+
+  ✅ SUCCESS:
+     "✓✓✓ ORDERER IS WORKING! ✓✓✓"
+     → Then run: ./create-channel-aws.sh
+
+  ❌ FAILED:
+     Script shows EXACTLY what's wrong
+     → Share that error message
+
+
+═══════════════════════════════════════════════════════════════════
+
+                    THAT'S IT!
+
+     1. Run: ./fix-orderer-now.sh
+     2. Read what it says
+     3. If works → run create-channel
+     4. If fails → share the error
+
+═══════════════════════════════════════════════════════════════════

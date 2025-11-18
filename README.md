@@ -22,16 +22,20 @@
 
 ## 🚀 FIX THE ERROR (Run on AWS)
 
-### Quick Fix:
+### **⭐ ONE COMMAND FIX:**
 ```bash
-./start-orderer.sh
+./fix-orderer-now.sh
 ```
 
-This script will:
-1. Check if genesis.block is a file (not directory)
-2. Fix it if it's a directory
-3. Start the orderer
-4. Verify it's working
+This will:
+1. ✅ Check why orderer failed
+2. ✅ Show orderer logs if crashed
+3. ✅ Fix genesis block if it's a directory
+4. ✅ Regenerate genesis block if needed
+5. ✅ Check TLS certificates
+6. ✅ Start orderer
+7. ✅ Verify it's working
+8. ✅ Tell you exactly what's wrong if it fails
 
 ### After orderer is running:
 ```bash

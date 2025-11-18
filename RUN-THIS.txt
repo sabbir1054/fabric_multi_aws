@@ -1,0 +1,78 @@
+═══════════════════════════════════════════════════════════════════
+                    🔴 ORDERER NOT WORKING FIX
+═══════════════════════════════════════════════════════════════════
+
+YOUR ERROR (from problem.md line 31):
+  ✗ Orderer container not found
+
+WHAT THIS MEANS:
+  Orderer either never started or crashed immediately
+
+═══════════════════════════════════════════════════════════════════
+                    🚀 THE FIX - COPY THIS
+═══════════════════════════════════════════════════════════════════
+
+On AWS machine (13.239.132.194):
+
+cd ~/fabric_multi_aws
+./fix-orderer-now.sh
+
+═══════════════════════════════════════════════════════════════════
+                    📊 WHAT THE SCRIPT DOES
+═══════════════════════════════════════════════════════════════════
+
+[1/8] Check for orderer container
+      → If exited, shows WHY it crashed
+
+[2/8] Check genesis.block
+      → If directory, FIXES it automatically
+
+[3/8] Generate genesis block if needed
+      → Creates it properly as a FILE
+
+[4/8] Check TLS certificates
+      → Verifies all certs exist
+
+[5/8] Check MSP
+      → Verifies MSP directory exists
+
+[6/8] Check docker-compose
+      → Verifies config file is valid
+
+[7/8] Start orderer
+      → docker-compose up -d orderer.example.com
+
+[8/8] Verify orderer is working
+      → Shows logs and confirms it's serving
+
+═══════════════════════════════════════════════════════════════════
+                    ✅ SUCCESS LOOKS LIKE THIS
+═══════════════════════════════════════════════════════════════════
+
+✓✓✓ ORDERER IS WORKING! ✓✓✓
+
+Next steps:
+1. Run: ./create-channel-aws.sh
+2. Run: ./diagnose.sh
+
+═══════════════════════════════════════════════════════════════════
+                    ❌ IF IT FAILS, YOU'LL SEE
+═══════════════════════════════════════════════════════════════════
+
+The script shows EXACTLY what's wrong:
+
+• "Genesis block is a DIRECTORY"    → Script fixes this
+• "ORDERER IS PANICKING"             → Shows panic message
+• "TLS certificates missing"         → Need crypto materials
+• "ORDERER FAILED TO START"          → Shows docker error
+
+═══════════════════════════════════════════════════════════════════
+                    📞 SUMMARY
+═══════════════════════════════════════════════════════════════════
+
+1. Run: ./fix-orderer-now.sh
+2. Read the output
+3. If SUCCESS: Run ./create-channel-aws.sh
+4. If FAILED: Share the error message shown by the script
+
+The script will tell you EXACTLY what's wrong!
