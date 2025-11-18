@@ -17,7 +17,7 @@ This guide will help you deploy a Hyperledger Fabric network across AWS and GCP.
 - SSH access configured
 
 ### Required IPs (Update these in the files):
-- **AWS Public IP**: `3.27.144.169` (Already configured)
+- **AWS Public IP**: `13.239.132.194` (Already configured)
 - **GCP Public IP**: `178.16.139.239` (Already configured)
 
 ---
@@ -59,12 +59,12 @@ fabric-network/
 #### 1. Upload files to AWS
 ```bash
 # On your local machine
-scp -r ./fabric-network ubuntu@3.27.144.169:~/
+scp -r ./fabric-network ubuntu@13.239.132.194:~/
 ```
 
 #### 2. SSH to AWS and make scripts executable
 ```bash
-ssh ubuntu@3.27.144.169
+ssh ubuntu@13.239.132.194
 cd ~/fabric-network
 chmod +x *.sh
 ```
@@ -210,9 +210,9 @@ telnet 178.16.139.239 7051
 #### From GCP:
 ```bash
 # Check if can reach AWS orderer
-ping 3.27.144.169
-telnet 3.27.144.169 7050
-telnet 3.27.144.169 7051
+ping 13.239.132.194
+telnet 13.239.132.194 7050
+telnet 13.239.132.194 7051
 ```
 
 ### Verify Both Peers See Each Other

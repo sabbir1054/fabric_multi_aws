@@ -1,0 +1,85 @@
+═══════════════════════════════════════════════════════════════
+             ORDERER FIX - QUICK REFERENCE CARD
+═══════════════════════════════════════════════════════════════
+
+PROBLEM: genesis.block is a DIRECTORY, not a FILE
+SYMPTOM: Orderer not in "docker ps" (keeps crashing)
+ERROR:   "panic: is a directory" in orderer logs
+
+───────────────────────────────────────────────────────────────
+THE FIX (On AWS Machine - ~/fabric_multi_aws)
+───────────────────────────────────────────────────────────────
+
+Option 1 - AUTOMATED (RECOMMENDED):
+════════════════════════════════════
+  ./fix-genesis-block.sh
+
+Option 2 - MANUAL:
+══════════════════
+  1. docker stop orderer.example.com
+  2. docker rm orderer.example.com
+  3. rm -rf ./system-genesis-block/genesis.block
+  4. docker exec cli bash -c "cd /opt/gopath/src/github.com/hyperledger/fabric/peer && configtxgen -profile TwoOrgsOrdererGenesis -channelID system-channel -outputBlock genesis.block -configPath /etc/hyperledger/fabric"
+  5. docker cp cli:/opt/gopath/src/github.com/hyperledger/fabric/peer/genesis.block /tmp/gb.tmp
+  6. mv /tmp/gb.tmp ./system-genesis-block/genesis.block
+  7. docker-compose -f docker-compose-aws.yml up -d orderer.example.com
+  8. docker logs orderer.example.com
+
+───────────────────────────────────────────────────────────────
+VERIFY THE FIX
+───────────────────────────────────────────────────────────────
+
+✓ Orderer running:
+  docker ps | grep orderer
+  → Should show "Up X seconds"
+
+✓ No panic in logs:
+  docker logs orderer.example.com | grep panic
+  → Should return nothing
+
+✓ Genesis block is a file:
+  ls -ld ./system-genesis-block/genesis.block
+  → Should start with "-" (not "d")
+
+✓ File type correct:
+  file ./system-genesis-block/genesis.block
+  → Should say "data"
+
+───────────────────────────────────────────────────────────────
+AFTER ORDERER IS RUNNING
+───────────────────────────────────────────────────────────────
+
+1. ./create-channel-aws.sh
+2. ./diagnose.sh
+3. docker exec cli peer channel list   # Should show: mychannel
+
+───────────────────────────────────────────────────────────────
+WHY THIS HAPPENED
+───────────────────────────────────────────────────────────────
+
+  docker cp created genesis.block as DIRECTORY
+  → docker-compose mounted DIRECTORY to container
+  → orderer expected FILE, got DIRECTORY
+  → PANIC!
+
+───────────────────────────────────────────────────────────────
+FILES TO READ (in order)
+───────────────────────────────────────────────────────────────
+
+  1. README-FIX.md            - Quick overview
+  2. URGENT-FIX.md            - Detailed fix steps
+  3. ROOT-CAUSE-ANALYSIS.md   - Why this happened
+  4. TROUBLESHOOTING.md       - If issues persist
+
+───────────────────────────────────────────────────────────────
+MOST IMPORTANT
+───────────────────────────────────────────────────────────────
+
+  The genesis.block MUST be a FILE, not a DIRECTORY.
+
+  Check with: ls -ld ./system-genesis-block/genesis.block
+
+  File:      -rw-r--r-- ... genesis.block   ← GOOD!
+  Directory: drwxr-xr-x ... genesis.block/  ← BAD!
+
+═══════════════════════════════════════════════════════════════

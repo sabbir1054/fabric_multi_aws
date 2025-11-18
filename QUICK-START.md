@@ -2,7 +2,7 @@
 
 ## TL;DR - Fast Deployment Steps
 
-### AWS Side (3.27.144.169)
+### AWS Side (13.239.132.194)
 
 ```bash
 # 1. Upload and setup
@@ -112,7 +112,7 @@ docker logs peer0.org2.example.com
 ## File Structure After Setup
 
 ```
-AWS (3.27.144.169):
+AWS (13.239.132.194):
 fabric-network/
 ├── docker-compose-aws.yml
 ├── setup-aws.sh
@@ -141,7 +141,7 @@ fabric-network/
 
 ```
 ┌─────────────────────────────────────┐
-│           AWS (3.27.144.169)        │
+│           AWS (13.239.132.194)        │
 │  ┌────────────────────────────────┐ │
 │  │  Orderer.example.com:7050      │ │
 │  └────────────────────────────────┘ │

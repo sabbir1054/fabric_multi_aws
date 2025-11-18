@@ -42,8 +42,8 @@ services:
       - 7051:7051
       - 9445:9445
     extra_hosts:
-      - "orderer.example.com:3.27.144.169"
-      - "peer0.org1.example.com:3.27.144.169"
+      - "orderer.example.com:13.239.132.194"
+      - "peer0.org1.example.com:13.239.132.194"
     networks:
       - fabric-net
 
@@ -74,8 +74,8 @@ services:
       - ./organizations:/etc/hyperledger/organizations
 
     extra_hosts:
-      - "orderer.example.com:3.27.144.169"
-      - "peer0.org1.example.com:3.27.144.169"
+      - "orderer.example.com:13.239.132.194"
+      - "peer0.org1.example.com:13.239.132.194"
       - "peer0.org2.example.com:178.16.139.239"
 
     networks:

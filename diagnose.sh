@@ -244,8 +244,8 @@ if [ "$LOCATION" == "AWS" ]; then
         echo -e "${RED}✗ Cannot reach GCP peer IP${NC}"
     fi
 else
-    echo -e "\n${YELLOW}Testing connection to AWS orderer (3.27.144.169)...${NC}"
-    if ping -c 2 3.27.144.169 > /dev/null 2>&1; then
+    echo -e "\n${YELLOW}Testing connection to AWS orderer (13.239.132.194)...${NC}"
+    if ping -c 2 13.239.132.194 > /dev/null 2>&1; then
         echo -e "${GREEN}✓ Can reach AWS orderer IP${NC}"
     else
         echo -e "${RED}✗ Cannot reach AWS orderer IP${NC}"

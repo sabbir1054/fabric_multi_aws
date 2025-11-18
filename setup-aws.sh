@@ -66,37 +66,53 @@ echo -e "\n${YELLOW}[6/8] Checking container status...${NC}"
 docker ps --filter "name=orderer.example.com" --filter "name=peer0.org1.example.com" --filter "name=cli"
 echo -e "${GREEN}✓ Containers are running${NC}"
 
-# Step 8: Generate Genesis Block (if not exists)
-echo -e "\n${YELLOW}[7/8] Checking genesis block...${NC}"
+# Step 8: Generate Genesis Block
+echo -e "\n${YELLOW}[7/8] Generating genesis block...${NC}"
 
-# Remove any existing genesis block directory/file to avoid conflicts
-rm -rf ./system-genesis-block/genesis.block
+# CRITICAL: Completely clean the system-genesis-block directory
+# to avoid "is a directory" error
+echo -e "${YELLOW}Cleaning system-genesis-block directory...${NC}"
+rm -rf ./system-genesis-block/*
+mkdir -p ./system-genesis-block
 
-if [ ! -f "./system-genesis-block/genesis.block" ]; then
-    echo -e "${YELLOW}Genesis block not found. Generating now...${NC}"
+# Generate genesis block inside CLI container
+echo -e "${YELLOW}Generating genesis block with configtxgen...${NC}"
+docker exec cli bash -c "
+cd /opt/gopath/src/github.com/hyperledger/fabric/peer
+configtxgen -profile TwoOrgsOrdererGenesis \
+    -channelID system-channel \
+    -outputBlock genesis.block \
+    -configPath /etc/hyperledger/fabric
+"
 
-    # Generate genesis block inside CLI container
-    docker exec cli bash -c "configtxgen -profile TwoOrgsOrdererGenesis \
-        -channelID system-channel \
-        -outputBlock ./genesis.block \
-        -configPath /etc/hyperledger/fabric"
-
-    # Copy to host directory (not to a file path)
-    docker cp cli:/opt/gopath/src/github.com/hyperledger/fabric/peer/genesis.block ./system-genesis-block/
-
-    # Verify it was created
-    if [ -f "./system-genesis-block/genesis.block" ]; then
-        echo -e "${GREEN}✓ Genesis block generated successfully${NC}"
-        ls -lh ./system-genesis-block/genesis.block
-    else
-        echo -e "${RED}✗ Failed to generate genesis block${NC}"
-        echo -e "${YELLOW}Checking what's in system-genesis-block:${NC}"
-        ls -la ./system-genesis-block/
-        exit 1
-    fi
-else
-    echo -e "${GREEN}✓ Genesis block already exists${NC}"
+if [ $? -ne 0 ]; then
+    echo -e "${RED}✗ Failed to generate genesis block with configtxgen${NC}"
+    exit 1
 fi
+
+# Copy to temp location first to ensure we get a FILE, not a directory
+echo -e "${YELLOW}Copying genesis block to host...${NC}"
+docker cp cli:/opt/gopath/src/github.com/hyperledger/fabric/peer/genesis.block /tmp/genesis.block.tmp
+
+# Move to final location
+mv /tmp/genesis.block.tmp ./system-genesis-block/genesis.block
+
+# Verify it's a FILE (not a directory)
+if [ -f "./system-genesis-block/genesis.block" ] && [ ! -d "./system-genesis-block/genesis.block" ]; then
+    echo -e "${GREEN}✓ Genesis block generated successfully as a FILE${NC}"
+    ls -lh ./system-genesis-block/genesis.block
+    file ./system-genesis-block/genesis.block
+else
+    echo -e "${RED}✗ Genesis block is not a proper file!${NC}"
+    echo -e "${YELLOW}Contents of system-genesis-block:${NC}"
+    ls -la ./system-genesis-block/
+    exit 1
+fi
+
+# Restart orderer to pick up the new genesis block
+echo -e "${YELLOW}Restarting orderer with new genesis block...${NC}"
+docker-compose -f docker-compose-aws.yml restart orderer.example.com
+sleep 3
 
 # Step 9: Generate Channel Artifacts
 echo -e "\n${YELLOW}[8/8] Generating channel artifacts...${NC}"

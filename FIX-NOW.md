@@ -9,7 +9,7 @@
 
 ## ✅ The Solution - Run These Commands
 
-### On Your AWS Machine (IP: 3.27.144.169)
+### On Your AWS Machine (IP: 13.239.132.194)
 
 ```bash
 # Navigate to your fabric directory
