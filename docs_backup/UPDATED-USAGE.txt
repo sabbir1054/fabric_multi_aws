@@ -1,0 +1,169 @@
+================================================================================
+  UPDATED - AUTO-INSTALL FABRIC BINARIES
+================================================================================
+
+The setup scripts have been updated to automatically install Fabric binaries
+if they're not found!
+
+================================================================================
+  TWO OPTIONS AVAILABLE
+================================================================================
+
+OPTION 1: Interactive Mode (Default)
+-------------------------------------
+./setup-machine1.sh
+
+• Checks for Fabric binaries
+• If not found, asks: "Install them automatically? (y/n)"
+• If you answer 'y', installs automatically
+• If you answer 'n', shows manual installation instructions
+
+OPTION 2: Auto-Install Mode (No Prompts)
+-----------------------------------------
+./setup-machine1-auto.sh
+
+• Checks for Fabric binaries
+• Automatically installs if missing WITHOUT asking
+• Perfect for automated deployments or CI/CD
+• Same functionality, just skips the confirmation
+
+================================================================================
+  WHAT GETS INSTALLED AUTOMATICALLY
+================================================================================
+
+When Fabric binaries are missing, the script will:
+
+1. Download Fabric binaries v2.4.0
+2. Try to install to /usr/local/bin (requires sudo)
+3. If sudo fails, installs to $HOME/bin
+4. Also copies to project's bin/ directory
+5. Adds to PATH for current session
+6. Updates ~/.bashrc for future sessions
+
+Binaries installed:
+  ✓ cryptogen
+  ✓ configtxgen
+  ✓ peer
+  ✓ orderer
+  ✓ fabric-ca-client
+
+================================================================================
+  USAGE EXAMPLES
+================================================================================
+
+Standard Usage (Interactive):
+------------------------------
+./setup-machine1.sh
+# Will prompt if Fabric binaries are missing
+
+Auto-Install Usage:
+-------------------
+./setup-machine1-auto.sh
+# Automatically installs missing binaries without asking
+
+Custom Channel/Chaincode:
+--------------------------
+./setup-machine1.sh my-channel my-chaincode
+./setup-machine1-auto.sh my-channel my-chaincode
+
+================================================================================
+  WHAT IF I ALREADY HAVE PREREQUISITES?
+================================================================================
+
+If you already have:
+  ✓ Docker installed
+  ✓ Docker Compose installed
+  ✓ Fabric binaries installed
+
+The scripts will detect them and skip installation!
+
+Just run:
+  ./setup-machine1.sh
+  or
+  ./setup-machine1-auto.sh
+
+And it will proceed directly to network deployment.
+
+================================================================================
+  ERROR HANDLING
+================================================================================
+
+If cryptogen is not found:
+  Interactive: Asks to install
+  Auto: Installs automatically
+
+If installation fails:
+  Shows error message with manual installation instructions:
+    curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.4.0 1.5.2
+
+If Docker/Docker-Compose missing:
+  Shows error with installation script:
+    ./install-prerequisites.sh --machine1
+
+================================================================================
+  RECOMMENDED WORKFLOW
+================================================================================
+
+First Time Setup (Clean Machine):
+----------------------------------
+1. ./install-prerequisites.sh --machine1
+   (Installs Docker, Docker Compose, and Fabric binaries)
+
+2. Logout and login
+
+3. ./setup-machine1.sh
+   (Deploys the network - everything is already installed)
+
+OR Quick Setup (Let Script Handle It):
+---------------------------------------
+1. Make sure Docker and Docker Compose are installed
+
+2. ./setup-machine1-auto.sh
+   (Installs Fabric binaries automatically if missing, then deploys)
+
+================================================================================
+  FILES UPDATED
+================================================================================
+
+✓ setup-machine1.sh
+  - Now includes auto-install function
+  - Prompts user before installing
+  - Better error messages
+
+✓ setup-machine1-auto.sh (NEW)
+  - Non-interactive version
+  - Automatically installs without prompting
+  - Perfect for automation
+
+================================================================================
+  NO CHANGES NEEDED TO
+================================================================================
+
+✓ setup-machine2.sh - No Fabric binaries needed on Machine 2
+✓ install-prerequisites.sh - Still works as before
+✓ check-prerequisites.sh - Still verifies everything
+
+================================================================================
+  SUMMARY
+================================================================================
+
+Your Error:
+  "ERROR: cryptogen not found"
+
+Solution:
+  1. Run: ./setup-machine1-auto.sh
+     (Will install automatically)
+
+  OR
+
+  2. Run: ./setup-machine1.sh
+     Answer 'y' when asked to install
+
+  OR
+
+  3. Run: ./install-prerequisites.sh --machine1
+     Then: ./setup-machine1.sh
+
+All three approaches will work!
+
+================================================================================

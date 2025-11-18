@@ -1,9 +1,10 @@
 #!/bin/bash
 #
-# MACHINE 1 - COMPLETE SETUP SCRIPT
+# MACHINE 1 - COMPLETE SETUP SCRIPT (AUTO-INSTALL VERSION)
 # This script sets up Org1 + Orderer on Machine 1
+# Automatically installs missing prerequisites without prompting
 #
-# Usage: ./setup-machine1.sh [channel_name] [chaincode_name]
+# Usage: ./setup-machine1-auto.sh [channel_name] [chaincode_name]
 #
 
 set -e
@@ -27,6 +28,7 @@ DELAY=3
 echo -e "${BLUE}"
 echo "================================================================================"
 echo "  HYPERLEDGER FABRIC - MACHINE 1 SETUP (Org1 + Orderer)"
+echo "  AUTO-INSTALL MODE - Will install missing prerequisites automatically"
 echo "================================================================================"
 echo -e "${NC}"
 echo "Channel Name: $CHANNEL_NAME"
@@ -52,8 +54,7 @@ fi
 
 # Function to install Fabric binaries
 install_fabric_binaries() {
-    echo -e "${YELLOW}Hyperledger Fabric binaries not found.${NC}"
-    echo -e "${GREEN}Installing automatically...${NC}"
+    echo -e "${YELLOW}Installing Hyperledger Fabric binaries automatically...${NC}"
 
     # Create temp directory
     TEMP_DIR=$(mktemp -d)
@@ -98,19 +99,13 @@ print_step "Step 1/9: Checking prerequisites..."
 command -v docker >/dev/null 2>&1 || print_error "Docker not found. Please install Docker first.\nRun: ./install-prerequisites.sh --machine1"
 command -v docker-compose >/dev/null 2>&1 || print_error "Docker Compose not found. Please install Docker Compose first.\nRun: ./install-prerequisites.sh --machine1"
 
-# Check for Fabric binaries, install if not found
+# Check for Fabric binaries, install automatically if not found
 if ! command -v cryptogen >/dev/null 2>&1 || ! command -v configtxgen >/dev/null 2>&1; then
-    echo -e "${YELLOW}Fabric binaries (cryptogen, configtxgen) not found${NC}"
-    read -p "Install them automatically? (y/n) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        install_fabric_binaries
-        # Verify installation
-        command -v cryptogen >/dev/null 2>&1 || print_error "Failed to install cryptogen. Please run: ./install-prerequisites.sh --machine1"
-        command -v configtxgen >/dev/null 2>&1 || print_error "Failed to install configtxgen. Please run: ./install-prerequisites.sh --machine1"
-    else
-        print_error "Fabric binaries are required. Please install them:\n  ./install-prerequisites.sh --machine1\nOr manually:\n  curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.4.0 1.5.2"
-    fi
+    echo -e "${YELLOW}Fabric binaries not found - installing automatically...${NC}"
+    install_fabric_binaries
+    # Verify installation
+    command -v cryptogen >/dev/null 2>&1 || print_error "Failed to install cryptogen"
+    command -v configtxgen >/dev/null 2>&1 || print_error "Failed to install configtxgen"
 fi
 
 echo "✓ All prerequisites found"
