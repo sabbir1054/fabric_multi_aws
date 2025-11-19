@@ -11,6 +11,7 @@
 **NO! Not yet.** This is an AWS-only problem.
 
 **The sequence is:**
+
 1. ✅ Fix orderer on AWS (do this first!)
 2. ✅ Create channel on AWS
 3. ✅ Then copy artifacts to GCP
@@ -23,11 +24,13 @@
 ## 🚀 FIX THE ERROR (Run on AWS)
 
 ### **⭐ ONE COMMAND FIX:**
+
 ```bash
 ./fix-orderer-now.sh
 ```
 
 This will:
+
 1. ✅ Check why orderer failed
 2. ✅ Show orderer logs if crashed
 3. ✅ Fix genesis block if it's a directory
@@ -38,6 +41,7 @@ This will:
 8. ✅ Tell you exactly what's wrong if it fails
 
 ### After orderer is running:
+
 ```bash
 ./create-channel-aws.sh   # Create channel
 ./diagnose.sh             # Verify everything
@@ -48,6 +52,7 @@ This will:
 ## 📁 Files in This Directory
 
 ### **Scripts (All .sh files are needed):**
+
 - `start-orderer.sh` - Start/fix orderer ⭐ **RUN THIS FIRST**
 - `setup-aws.sh` - Initial AWS setup
 - `create-channel-aws.sh` - Create channel on AWS
@@ -60,12 +65,14 @@ This will:
 - `cleanup-gcp.sh` - Clean GCP
 
 ### **Documentation (Only 3 files):**
+
 - `README.md` - This file ⭐ **START HERE**
 - `DEPLOYMENT-GUIDE.md` - Full deployment guide
 - `TROUBLESHOOTING.md` - When things go wrong
 - `problem.md` - Your current error log
 
 ### **Configuration:**
+
 - `docker-compose-aws.yml` - AWS containers
 - `docker-compose-gcp.yml` - GCP containers
 
@@ -76,7 +83,7 @@ This will:
 ### **Phase 1: AWS Setup (YOU ARE HERE)**
 
 ```bash
-# On AWS machine (13.239.132.194)
+# On AWS machine (54.79.85.38)
 
 # 1. Start orderer (fixes genesis block issue)
 ./start-orderer.sh
@@ -118,16 +125,20 @@ chmod +x *.sh
 ## ❌ Common Errors
 
 ### Error: "Orderer container not found"
+
 **Solution:** Run `./start-orderer.sh`
 
 ### Error: "genesis.block: is a directory"
+
 **Solution:** Run `./fix-genesis-block.sh`
 
 ### Error: "lookup orderer.example.com: no such host"
+
 **Cause:** Orderer is not running
 **Solution:** Run `./start-orderer.sh`
 
 ### Error: Channel creation fails
+
 **Cause:** Orderer not serving requests
 **Check:** `docker logs orderer.example.com | grep "Beginning to serve"`
 **Solution:** If not serving, restart: `docker-compose -f docker-compose-aws.yml restart orderer.example.com`
@@ -138,7 +149,7 @@ chmod +x *.sh
 
 ```
 ┌─────────────────────────────────────┐
-│   AWS (13.239.132.194)              │
+│   AWS (54.79.85.38)              │
 │   ┌───────────────────────────────┐ │
 │   │  Orderer :7050                │ │  ← You need this working first!
 │   │  Peer0.Org1 :7051             │ │

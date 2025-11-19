@@ -14,7 +14,7 @@ THE FIX IS READY:
                     🚀 RUN THIS NOW - COPY THESE COMMANDS
 ═══════════════════════════════════════════════════════════════════
 
-On AWS machine (13.239.132.194):
+On AWS machine (54.79.85.38):
 
 cd ~/fabric_multi_aws
 chmod +x FRESH-START.sh

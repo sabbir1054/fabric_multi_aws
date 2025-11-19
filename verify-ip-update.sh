@@ -20,25 +20,25 @@ else
 fi
 
 # Check for new IP
-NEW_IP_COUNT=$(grep -r "13.239.132.194" . --include="*.yml" --include="*.sh" --include="*.md" 2>/dev/null | wc -l)
+NEW_IP_COUNT=$(grep -r "54.79.85.38" . --include="*.yml" --include="*.sh" --include="*.md" 2>/dev/null | wc -l)
 
 if [ "$NEW_IP_COUNT" -gt 0 ]; then
-    echo -e "${GREEN}✓ New IP (13.239.132.194) found in $NEW_IP_COUNT locations${NC}"
+    echo -e "${GREEN}✓ New IP (54.79.85.38) found in $NEW_IP_COUNT locations${NC}"
 else
     echo -e "${RED}✗ New IP not found!${NC}"
 fi
 
 # Check docker-compose-gcp.yml specifically
 echo -e "\n${YELLOW}Checking docker-compose-gcp.yml:${NC}"
-if grep -q "13.239.132.194" docker-compose-gcp.yml; then
+if grep -q "54.79.85.38" docker-compose-gcp.yml; then
     echo -e "${GREEN}✓ GCP docker-compose has correct AWS IP${NC}"
-    grep "13.239.132.194" docker-compose-gcp.yml
+    grep "54.79.85.38" docker-compose-gcp.yml
 else
     echo -e "${RED}✗ GCP docker-compose missing new IP${NC}"
 fi
 
 echo -e "\n${YELLOW}Network Configuration:${NC}"
-echo -e "AWS IP: ${GREEN}13.239.132.194${NC}"
+echo -e "AWS IP: ${GREEN}54.79.85.38${NC}"
 echo -e "GCP IP: ${GREEN}178.16.139.239${NC}"
 
 echo -e "\n${GREEN}Verification complete!${NC}"
