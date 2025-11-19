@@ -21,8 +21,6 @@ services:
       - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
       - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
-      - ORDERER_GENERAL_BOOTSTRAPMETHOD=file
-      - ORDERER_GENERAL_BOOTSTRAPFILE=/var/hyperledger/orderer/orderer.genesis.block
       - ORDERER_CHANNELPARTICIPATION_ENABLED=true
       - ORDERER_ADMIN_TLS_ENABLED=true
       - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
@@ -35,7 +33,6 @@ services:
     working_dir: /opt/hyperledger/orderer
     command: orderer
     volumes:
-      - ./system-genesis-block/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls:/var/hyperledger/orderer/tls
       - ./organizations:/opt/hyperledger/fabric/organizations
